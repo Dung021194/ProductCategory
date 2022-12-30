@@ -1,11 +1,15 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
+        String pathProduct = "C:\\Users\\DUNGHUYEN\\Desktop\\New folder (6)\\ProductCategory\\src\\listProduct";
+        String pathCategory = "C:\\Users\\DUNGHUYEN\\Desktop\\New folder (6)\\ProductCategory\\src\\categoryList";
         Scanner scanner = new Scanner(System.in);
         ProductManager productManager = new ProductManager();
+        productManager.categoryManager.categoryList =productManager.categoryManager.read(pathCategory);
+        productManager.listProduct = productManager.read(pathProduct);
+
 
         do {
             System.out.println("MENU");
@@ -22,19 +26,25 @@ public class Main {
                 int choice = Integer.parseInt(scanner.nextLine());
                 switch (choice) {
                     case 1:
-                        productManager.categoryManager.CategoryManagerMenu(choice,scanner, productManager);
+                        productManager.categoryManager.CategoryManagerMenu(scanner, productManager);
+                        productManager.categoryManager.writeList(pathCategory,productManager.categoryManager.categoryList);
+
                         break;
                     case 2:
-                        productManager.displayMenu(choice,scanner);
+                        productManager.displayMenu(scanner);
                         break;
                     case 3:
                         productManager.save(productManager.create(scanner));
+                        productManager.writeList(pathProduct,productManager.listProduct);
+                        productManager.categoryManager.writeList(pathCategory,productManager.categoryManager.categoryList);
                         break;
                     case 4:
+                        productManager.display(productManager.listProduct);
                         System.out.println("Enter ID of product you wanna delete:");
                         int delId = Integer.parseInt(scanner.nextLine());
                         productManager.deleteById(delId);
                         productManager.display(productManager.listProduct);
+                        productManager.writeList(pathProduct,productManager.listProduct);
                         break;
                     case 5:
                         productManager.searchProductByName(scanner);
@@ -45,6 +55,9 @@ public class Main {
                         break;
                     case 7:
                         productManager.edit(scanner);
+                        productManager.writeList(pathProduct,productManager.listProduct);
+                        productManager.categoryManager.writeList(pathCategory,productManager.categoryManager.categoryList);
+
                         break;
                     case 0:
                         System.exit(0);
@@ -54,6 +67,4 @@ public class Main {
             }
         } while (true);
     }
-
-
 }

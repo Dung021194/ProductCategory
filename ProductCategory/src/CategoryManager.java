@@ -1,5 +1,4 @@
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
-
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -64,8 +63,7 @@ public class CategoryManager implements CRUD<Category> {
     public void deleteById(int delId) {
         for (Category c:categoryList){
             if (delId== c.getId()){
-                int i = categoryList.indexOf(c);
-                categoryList.remove(i);
+                categoryList.remove(c);
                 break;
             }
         }
@@ -86,7 +84,7 @@ public class CategoryManager implements CRUD<Category> {
     }
     public Category choiceCategory(Scanner scanner){
         int choiceId = Integer.parseInt(scanner.nextLine());
-        Category choiceCategoryId =null;
+        Category choiceCategoryId;
         if (choiceId==0){
             choiceCategoryId=this.create(scanner);
             save(choiceCategoryId);
@@ -110,10 +108,11 @@ public class CategoryManager implements CRUD<Category> {
     }
 
 
-    public void CategoryManagerMenu(int choice, Scanner scanner, ProductManager productManager){
+    public void CategoryManagerMenu(Scanner scanner, ProductManager productManager){
 
+        int choice;
         do {
-            System.out.println("Choose number:");
+            System.out.println("CATEGORY MENU");
             System.out.println("1. Add a new category:");
             System.out.println("2. Delete category by ID:");
             System.out.println("3. Display all category:");
@@ -137,7 +136,7 @@ public class CategoryManager implements CRUD<Category> {
                     this.edit(scanner);
                     break;
             }
-        }while (choice!=0);
+        }while (choice !=0);
     }
 
     public void deleteByCategoryName(String categoryName, ProductManager productManager) {
@@ -148,11 +147,39 @@ public class CategoryManager implements CRUD<Category> {
                     delList.add(p.getId());
                 }
             }
-            for (int i=0; i< delList.size();i++) {
-                int c=delList.get(i);
+            for (int c : delList) {
                 productManager.deleteById(c);
             }
         }
+    }
+    public void writeList(String pathCategory,ArrayList<Category> categoryList){
+        try{
+            FileOutputStream fileOutputStream = new FileOutputStream(pathCategory);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(categoryList);
+            objectOutputStream.close();
+           fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public ArrayList<Category> read(String pathCategory){
+        try {
+            File file = new File(pathCategory);
+            if (!file.exists()){
+                file.createNewFile();
+            }
+            FileInputStream fileInputStream = new FileInputStream(pathCategory);
+            if (fileInputStream.available()>0){
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                categoryList = (ArrayList<Category>) objectInputStream.readObject();
+                objectInputStream.close();
+                fileInputStream.close();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return categoryList;
     }
 
 }

@@ -1,4 +1,7 @@
-public class Candy extends Product{
+import java.io.Serializable;
+
+public class Candy extends Product implements Serializable {
+    private static final long serialVersionUID = -3326426625597282442L;
     private double weight;
 
     public double getWeight() {

@@ -1,5 +1,5 @@
+import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class ProductManager implements CRUD<Product> {
@@ -55,7 +55,7 @@ public class ProductManager implements CRUD<Product> {
 
         } while (!flag);
 
-        Product choiceProduct = null;
+        Product choiceProduct;
         switch (choice) {
             case 1:
                 System.out.println("Enter volume of product "+(index+1));
@@ -146,8 +146,7 @@ public class ProductManager implements CRUD<Product> {
     public void deleteById(int delId) {
         for (Product p:listProduct){
             if (delId== p.getId()){
-                int i= listProduct.indexOf(p);
-                listProduct.remove(i);
+                listProduct.remove(p);
                 break;
             }
         }
@@ -171,14 +170,19 @@ public class ProductManager implements CRUD<Product> {
 
     @Override
     public void display(ArrayList<Product> listProduct) {
+        if (!listProduct.isEmpty()){
         for (Product p: listProduct){
             System.out.println(p);
+            }
         }
+        else {
+            System.out.println("No product");
+    }
     }
     public void displayDrinksProduct(){
         for (Product p : listProduct){
             if (p instanceof Drinks){
-                System.out.println((Drinks)p);
+                System.out.println(p);
             }
         }
     }
@@ -186,7 +190,7 @@ public class ProductManager implements CRUD<Product> {
         if (!listProduct.isEmpty()) {
             for (Product p : listProduct) {
                 if (p instanceof Candy) {
-                    System.out.println((Candy)p);
+                    System.out.println(p);
                 }
             }
         }else {
@@ -305,8 +309,10 @@ public class ProductManager implements CRUD<Product> {
             System.out.println("Out of category list");
         }
     }
-    public void displayMenu(int choice,Scanner scanner){
+    public void displayMenu(Scanner scanner){
+        int choice;
         do {
+            System.out.println("PRODUCT DISPLAY MENU");
             System.out.println("1. Display all product:");
             System.out.println("2. Display Candy product:");
             System.out.println("3. Display Drinks product:");
@@ -343,7 +349,35 @@ public class ProductManager implements CRUD<Product> {
                     categoryManager.display(categoryManager.categoryList);
                     displayTypeProduct(scanner);
             }
-        }while (choice!=0);
+        }while (choice !=0);
     }
-
+    public void writeList(String pathProduct,ArrayList<Product> listProduct){
+        try{
+            FileOutputStream fos = new FileOutputStream(pathProduct);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
+            objectOutputStream.writeObject(listProduct);
+            objectOutputStream.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public ArrayList<Product> read(String pathProduct){
+        try {
+            File file = new File(pathProduct);
+            if (!file.exists()){
+                file.createNewFile();
+            }
+            FileInputStream fileInputStream = new FileInputStream(pathProduct);
+            if (fileInputStream.available()>0){
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                listProduct = (ArrayList<Product>) objectInputStream.readObject();
+                objectInputStream.close();
+                fileInputStream.close();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.getStackTrace();
+        }
+        return listProduct;
+    }
 }
