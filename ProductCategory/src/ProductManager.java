@@ -18,7 +18,7 @@ public class ProductManager implements CRUD<Product> {
         if (listProduct.isEmpty()) {
             id = index + 1;
         } else {
-            id = listProduct.size() + 1;
+            id = listProduct.get(listProduct.size()-1).getId() + 1;
         }
         System.out.println("Enter name of product "+(index+1));
         String name = scanner.nextLine();
